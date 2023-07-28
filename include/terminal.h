@@ -10,7 +10,8 @@ public:
     Terminal(sf::RenderWindow& window, const sf::Font& font);
 
     void draw();
-
+    void draw(const sf::Shader& shader);
+    
     void handleInput();
 
     void handleKeyPress(sf::Uint32 keyCode);

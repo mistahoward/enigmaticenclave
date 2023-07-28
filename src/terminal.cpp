@@ -3,62 +3,54 @@
 
 #include "../include/terminal.h"
 
-class Terminal {
-	sf::Shader crtShader;
-	const std::string shaderCode = R"(
+const std::string shaderCode = R"(
 	#include "./assets/crt_shader.frag"
 	)";
-public:
-	Terminal::Terminal(sf::RenderWindow& window, const sf::Font& font)
-		: window(window), font(font) {
-		text.setFont(font);
-		text.setCharacterSize(20);
-		text.setFillColor(sf::Color::Green);
-		text.setPosition(10.f, 10.f);
-		if (!crtShader.loadFromMemory(shaderCode, sf::Shader::Fragment)) {
-			std::cout << "Error loading shader." << std::endl;
-		}
-	}
-
-	void draw() {
-        // Apply CRT shader effect to the whole window
-        window.draw(text, &crtShader);
-        window.display();
+    
+Terminal::Terminal(sf::RenderWindow& window, const sf::Font& font)
+    : window(window), font(font) {
+    text.setFont(font);
+    text.setCharacterSize(20);
+    text.setFillColor(sf::Color::Green);
+    text.setPosition(10.f, 10.f);
+    if (!crtShader.loadFromMemory(shaderCode, sf::Shader::Fragment)) {
+        std::cout << "Error loading shader." << std::endl;
     }
+}
 
-    void handleInput() {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed) {
-                window.close();
-            } else if (event.type == sf::Event::TextEntered) {
-                if (event.text.unicode < 128) {
-                    handleKeyPress(event.text.unicode);
-                }
+void Terminal::draw() {
+    window.clear(sf::Color::Black);
+    window.draw(text);
+    window.display();
+}
+
+void Terminal::draw(const sf::Shader& shader) {
+    // Apply CRT shader effect to the whole window
+    window.draw(text, &shader);
+    window.display();
+}
+
+void Terminal::handleInput() {
+    sf::Event event;
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed) {
+            window.close();
+        } else if (event.type == sf::Event::TextEntered) {
+            if (event.text.unicode < 128) {
+                handleKeyPress(event.text.unicode);
             }
         }
     }
+}
 
-    void handleKeyPress(sf::Uint32 keyCode) {
-        // Handle the key press here.
-        // For example, add the character to a buffer and process commands.
-    }
+void Terminal::handleKeyPress(sf::Uint32 keyCode) {
+    // Handle the key press here.
+    // For example, add the character to a buffer and process commands.
+}
 
-    void update() {
-        // Update the terminal state here.
-    }
-
-    void draw() {
-        window.clear(sf::Color::Black);
-        window.draw(text);
-        window.display();
-    }
-
-private:
-    sf::RenderWindow& window;
-    const sf::Font& font;
-    sf::Text text;
-};
+void Terminal::update() {
+    // Update the terminal state here.
+}
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Fake Terminal");
