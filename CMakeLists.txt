@@ -1,13 +1,11 @@
 cmake_minimum_required(VERSION 3.10)
 project(EnigmaticEnclave)
 
-set(SFML_INCLUDE_DIR "/opt/homebrew/Cellar/sfml/2.6.0/include")
-set(SFML_LIBRARY_DIR "/opt/homebrew/Cellar/sfml/2.6.0/lib")
-set(SFML_DIR "/opt/homebrew/Cellar/sfml/2.6.0/lib/cmake/SFML")
-
-link_directories(SFML_LIBRARY_DIR)
-
-include_directories(SFML_INCLUDE_DIR)
+if (APPLE)
+    set(SFML_DIR "/opt/homebrew/Cellar/sfml/2.6.0/lib/cmake/SFML")
+elseif (WIN32)
+    set(SFML_DIR "C:/cpp/sfml/lib/cmake/SFML")
+endif()
 
 find_package(SFML 2.6 COMPONENTS graphics audio window system REQUIRED)
 
