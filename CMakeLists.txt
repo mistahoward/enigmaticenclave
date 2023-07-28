@@ -9,6 +9,6 @@ endif()
 
 find_package(SFML 2.6 COMPONENTS graphics audio window system REQUIRED)
 
-add_executable(EnigmaticEnclave src/main.cpp src/game.cpp)
+add_executable(EnigmaticEnclave src/main.cpp src/game.cpp src/terminal.cpp)
 
 target_link_libraries(EnigmaticEnclave sfml-graphics sfml-audio sfml-window sfml-system)
