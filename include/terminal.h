@@ -9,7 +9,8 @@ public:
     Terminal(sf::RenderWindow& window, const sf::Font& font);
 
     void draw();
-    void draw(const std::string& message);
+
+    void write(const std::string& message);
     
     void handleInput();
 
@@ -20,9 +21,10 @@ public:
 private:
     sf::RenderWindow& window;
     sf::Font font;
-    sf::Shader crtShader;
     sf::Text text;
-    bool shaderLoaded;
+    sf::Shader crtShader;
+    sf::RenderTexture sceneTexture;
+    sf::Sprite sceneSprite;
 };
 
 #endif // TERMINAL_H

@@ -8,8 +8,9 @@
     
 bool shaderLoaded = false;
 
-Terminal::Terminal(sf::RenderWindow& window, const sf::Font& font)
-    : window(window), font(font), shaderLoaded(false) {
+    Terminal::Terminal(sf::RenderWindow& window, const sf::Font& font)
+        : window(window), font(font)
+    {
     text.setFont(font);
     text.setCharacterSize(20);
     text.setFillColor(sf::Color::Green);
@@ -17,37 +18,62 @@ Terminal::Terminal(sf::RenderWindow& window, const sf::Font& font)
 
     float curvatureX = 3.0f;
     float curvatureY = 3.0f;
-    float screenResX = 640.0f;
-    float screenResY = 480.0f;
     float scanLineOpacityX = 1.0f;
     float scanLineOpacityY = 1.0f;
     float vignetteOpacity = 1.0f;
     float brightness = 4.0f;
     float vignetteRoundness = 2.0f;
 
-    bool disableShader = true;
+    bool disableShader = false;
 
     if (disableShader || !crtShader.loadFromFile("./src/assets/vertex_shader.vert", "./src/assets/crt_shader.frag")) {
-        std::cout << "Error loading shader." << std::endl;
+        if (disableShader) {
+            std::cout << "Shader disabled." << std::endl;
+        } else {
+            std::cout << "Error loading shader." << std::endl;
+        }
+        shaderLoaded = false;
+        } else {
+            crtShader.setUniform("textureSampler", sf::Shader::CurrentTexture);
+            crtShader.setUniform("curvature", sf::Vector2f(3.0f, 3.0f));
+            crtShader.setUniform("screenResolution", sf::Vector2f(window.getSize().x, window.getSize().y));
+            crtShader.setUniform("scanLineOpacity", sf::Vector2f(1.0f, 1.0f));
+            crtShader.setUniform("vignetteOpacity", 1.0f);
+            crtShader.setUniform("brightness", 4.0f);
+            crtShader.setUniform("vignetteRoundness", 2.0f);
+            shaderLoaded = true;
+    }
+    if (disableShader || !sceneTexture.create(window.getSize().x, window.getSize().y)) {
+        if (disableShader) {
+            std::cout << "Shader disabled." << std::endl;
+        } else {
+            std::cout << "Error loading shader." << std::endl;
+        }
+        // Handle error...
     } else {
-        crtShader.setUniform("textureSampler", sf::Shader::CurrentTexture);
-        crtShader.setUniform("curvature", sf::Vector2f(curvatureX, curvatureY));
-        crtShader.setUniform("screenResolution", sf::Vector2f(screenResX, screenResY));
-        crtShader.setUniform("scanLineOpacity", sf::Vector2f(scanLineOpacityX, scanLineOpacityY));
-        crtShader.setUniform("vignetteOpacity", vignetteOpacity);
-        crtShader.setUniform("brightness", brightness);
-        crtShader.setUniform("vignetteRoundness", vignetteRoundness);
-        shaderLoaded = true;
+        sceneSprite.setTexture(sceneTexture.getTexture());
+        sceneSprite.setTextureRect(sf::IntRect(0, 0, window.getSize().x, window.getSize().y));
     }
 }
 
-void Terminal::draw(const std::string& message) {
-    text.setString(message);
+void Terminal::draw() {
+    sceneTexture.clear(sf::Color::Black);
+    
+    sceneTexture.draw(text);
+    sceneTexture.display();
+
+    window.clear(sf::Color::Black);
     if (shaderLoaded) {
-        window.draw(text, &crtShader);
+        sf::RenderStates states;
+        states.shader = &crtShader;
+        window.draw(sceneSprite, states);
     } else {
-        window.draw(text);
+        window.draw(sceneSprite);
     }
+}
+
+void Terminal::write(const std::string& message) {
+    text.setString(message);
 }
 
 void Terminal::handleInput() {
