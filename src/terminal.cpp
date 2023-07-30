@@ -1,34 +1,65 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
 
 #include "../include/terminal.h"
-
-const std::string shaderCode = R"(
-	#include "./assets/crt_shader.frag"
-	)";
     
+bool shaderLoaded = false;
+
 Terminal::Terminal(sf::RenderWindow& window, const sf::Font& font)
-    : window(window), font(font) {
+    : window(window), font(font), shaderLoaded(false) {
     text.setFont(font);
     text.setCharacterSize(20);
     text.setFillColor(sf::Color::Green);
     text.setPosition(10.f, 10.f);
-    if (!crtShader.loadFromMemory(shaderCode, sf::Shader::Fragment)) {
+
+    float curvatureX = 3.0f;
+    float curvatureY = 3.0f;
+    float screenResX = 640.0f;
+    float screenResY = 480.0f;
+    float scanLineOpacityX = 1.0f;
+    float scanLineOpacityY = 1.0f;
+    float vignetteOpacity = 1.0f;
+    float brightness = 4.0f;
+    float vignetteRoundness = 2.0f;
+
+    if (!crtShader.loadFromFile("./src/assets/vertex_shader.vert", "./src/assets/crt_shader.frag")) {
         std::cout << "Error loading shader." << std::endl;
+    } else {
+        crtShader.setUniform("textureSampler", sf::Shader::CurrentTexture);
+        crtShader.setUniform("curvature", sf::Vector2f(curvatureX, curvatureY));
+        crtShader.setUniform("screenResolution", sf::Vector2f(screenResX, screenResY));
+        crtShader.setUniform("scanLineOpacity", sf::Vector2f(scanLineOpacityX, scanLineOpacityY));
+        crtShader.setUniform("vignetteOpacity", vignetteOpacity);
+        crtShader.setUniform("brightness", brightness);
+        crtShader.setUniform("vignetteRoundness", vignetteRoundness);
+        shaderLoaded = true;
     }
 }
 
 void Terminal::draw() {
-    window.clear(sf::Color::Black);
-    window.draw(text);
+    window.clear(sf::Color::Blue);
+    if (shaderLoaded) {
+        window.draw(text, &crtShader);
+    } else {
+        window.draw(text);
+    }
     window.display();
 }
 
-void Terminal::draw(const sf::Shader& shader) {
-    // Apply CRT shader effect to the whole window
-    window.draw(text, &shader);
+void Terminal::draw(const std::string& message) {
+    text.setString(message);
+    window.clear(sf::Color::Blue);
+    if (shaderLoaded) {
+        window.draw(text, &crtShader);
+    } else {
+        window.draw(text);
+    }
     window.display();
 }
+
 
 void Terminal::handleInput() {
     sf::Event event;
@@ -50,23 +81,4 @@ void Terminal::handleKeyPress(sf::Uint32 keyCode) {
 
 void Terminal::update() {
     // Update the terminal state here.
-}
-
-int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Fake Terminal");
-    sf::Font font;
-    if (!font.loadFromFile("../assets/space_mono.ttf")) {
-        std::cout << "Error loading font." << std::endl;
-        return 1;
-    }
-
-    Terminal terminal(window, font);
-
-    while (window.isOpen()) {
-        terminal.handleInput();
-        terminal.update();
-        terminal.draw();
-    }
-
-    return 0;
 }

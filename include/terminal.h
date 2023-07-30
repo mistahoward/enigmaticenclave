@@ -5,12 +5,11 @@
 #include <iostream>
 
 class Terminal {
-    sf::Shader crtShader;
 public:
     Terminal(sf::RenderWindow& window, const sf::Font& font);
 
     void draw();
-    void draw(const sf::Shader& shader);
+    void draw(const std::string& message);
     
     void handleInput();
 
@@ -20,8 +19,10 @@ public:
 
 private:
     sf::RenderWindow& window;
-    const sf::Font& font;
+    sf::Font font;
+    sf::Shader crtShader;
     sf::Text text;
+    bool shaderLoaded;
 };
 
 #endif // TERMINAL_H

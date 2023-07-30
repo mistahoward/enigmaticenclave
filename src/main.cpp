@@ -5,7 +5,7 @@
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Fake Terminal");
     sf::Font font;
-    if (!font.loadFromFile("./assets/space_mono.ttf")) {
+    if (!font.loadFromFile("./src/assets/space_mono.ttf")) {
         std::cout << "Error loading font." << std::endl;
         return 1;
     }

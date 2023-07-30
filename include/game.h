@@ -1,10 +1,9 @@
-// game.h
-
 #ifndef GAME_H
 #define GAME_H
 
-#include "terminal.h"
 #include <SFML/Graphics.hpp>
+
+#include "terminal.h"
 
 class Game {
 public:
@@ -13,6 +12,7 @@ public:
     void run();
 
 private:
+    sf::RenderWindow& window;
     Terminal terminal;
 };
 
