@@ -5,8 +5,7 @@ Game::Game(sf::RenderWindow& window, const sf::Font& font) : window(window), ter
     // Constructor implementation (initialize game variables, etc.)
 }
 
-void Game::run()
-{
+void Game::run() {
     std::cout << "Welcome to The Enigmatic Enclave: Survival Unveiled!" << std::endl;
 
     // Main game loop implementation
@@ -20,8 +19,7 @@ void Game::run()
         }
 
         window.clear();
-        terminal.draw();
-        
+        terminal.draw("Hello, world!");
         window.display();
     }
 }

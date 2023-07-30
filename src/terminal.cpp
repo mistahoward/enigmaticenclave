@@ -25,7 +25,9 @@ Terminal::Terminal(sf::RenderWindow& window, const sf::Font& font)
     float brightness = 4.0f;
     float vignetteRoundness = 2.0f;
 
-    if (!crtShader.loadFromFile("./src/assets/vertex_shader.vert", "./src/assets/crt_shader.frag")) {
+    bool disableShader = true;
+
+    if (disableShader || !crtShader.loadFromFile("./src/assets/vertex_shader.vert", "./src/assets/crt_shader.frag")) {
         std::cout << "Error loading shader." << std::endl;
     } else {
         crtShader.setUniform("textureSampler", sf::Shader::CurrentTexture);
@@ -39,27 +41,14 @@ Terminal::Terminal(sf::RenderWindow& window, const sf::Font& font)
     }
 }
 
-void Terminal::draw() {
-    window.clear(sf::Color::Blue);
-    if (shaderLoaded) {
-        window.draw(text, &crtShader);
-    } else {
-        window.draw(text);
-    }
-    window.display();
-}
-
 void Terminal::draw(const std::string& message) {
     text.setString(message);
-    window.clear(sf::Color::Blue);
     if (shaderLoaded) {
         window.draw(text, &crtShader);
     } else {
         window.draw(text);
     }
-    window.display();
 }
-
 
 void Terminal::handleInput() {
     sf::Event event;
